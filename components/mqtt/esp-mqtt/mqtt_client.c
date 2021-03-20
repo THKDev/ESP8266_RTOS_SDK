@@ -624,7 +624,7 @@ static esp_err_t mqtt_process_receive(esp_mqtt_client_handle_t client)
             }
             client->mqtt_state.message_length_read = read_len;
             client->mqtt_state.message_length = mqtt_get_total_length(client->mqtt_state.in_buffer, client->mqtt_state.message_length_read);
-            ESP_LOGI(TAG, "deliver_publish, message_length_read=%d, message_length=%d", read_len, client->mqtt_state.message_length);
+            ESP_LOGD(TAG, "deliver_publish, message_length_read=%d, message_length=%d", read_len, client->mqtt_state.message_length);
 
             deliver_publish(client, client->mqtt_state.in_buffer, client->mqtt_state.message_length_read);
             break;
