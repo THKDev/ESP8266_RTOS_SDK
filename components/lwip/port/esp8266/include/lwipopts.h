@@ -718,7 +718,7 @@ size_t memp_malloc_get_size(size_t type);
  * response packet, an callback is called, which has to be provided by the port:
  * void dhcp_set_ntp_servers(u8_t num_ntp_servers, ip_addr_t* ntp_server_addrs);
 */
-#define LWIP_DHCP_GET_NTP_SRV           0
+#define LWIP_DHCP_GET_NTP_SRV           1
 
 /**
  * The maximum of NTP servers requested
