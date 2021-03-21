@@ -255,7 +255,9 @@ static esp_err_t esp_mqtt_abort_connection(esp_mqtt_client_handle_t client)
     client->wait_timeout_ms = MQTT_RECONNECT_TIMEOUT_MS;
     client->reconnect_tick = platform_tick_get_ms();
     client->state = MQTT_STATE_WAIT_TIMEOUT;
-    ESP_LOGI(TAG, "Reconnect after %d ms", client->wait_timeout_ms);
+    if (client->auto_reconnect) {
+        ESP_LOGI(TAG, "Reconnect after %d ms", client->wait_timeout_ms);
+    }
     client->event.event_id = MQTT_EVENT_DISCONNECTED;
     client->wait_for_ping_resp = false;
     esp_mqtt_dispatch_event(client);
