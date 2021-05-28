@@ -48,7 +48,20 @@ extern "C" {
 #define mem_blk_set_prev(_mem_blk, _prev) _mem_blk_set_ptr(_mem_blk, _prev, 0, MEM_BLK_TAG)
 #define mem_blk_set_next(_mem_blk, _next) _mem_blk_set_ptr(_mem_blk, _next, 1, MEM_BLK_TRACE)
 
-static inline size_t mem_blk_head_size(bool trace)
+#ifdef CONFIG_HEAP_TRACING
+#define ptr2memblk_size(size, trace) __ptr2memblk_size(size, trace)
+#define blk2ptr(mem_blk, trace) __blk2ptr(mem_blk, trace)
+#define mem_blk_head_size(trace) __mem_blk_head_size(trace)
+#define ptr2blk(ptr, trace) __ptr2blk(ptr, trace)
+#else
+#define ptr2memblk_size(size, trace) __ptr2memblk_size(size, false)
+#define blk2ptr(mem_blk, trace) __blk2ptr(mem_blk, false)
+#define mem_blk_head_size(trace) __mem_blk_head_size(false)
+#define ptr2blk(ptr, trace) __ptr2blk(ptr, false)
+#endif
+
+
+static inline size_t __mem_blk_head_size(bool trace)
 {
     return trace ? MEM2_HEAD_SIZE : MEM_HEAD_SIZE;    
 }
@@ -127,7 +140,7 @@ static inline size_t get_blk_region(void *ptr)
     return num;
 }
 
-static inline size_t ptr2memblk_size(size_t size, bool trace)
+static inline size_t __ptr2memblk_size(size_t size, bool trace)
 {
     size_t head_size = trace ? MEM2_HEAD_SIZE : MEM_HEAD_SIZE;
 
@@ -136,19 +149,23 @@ static inline size_t ptr2memblk_size(size_t size, bool trace)
 
 static inline bool ptr_is_traced(void *ptr)
 {
+#ifdef CONFIG_HEAP_TRACING
     uint32_t *p = (uint32_t *)ptr - 1;
 
     return p[0] & MEM_BLK_TRACE ? true : false;
+#else
+    return false;
+#endif    
 }
 
-static inline mem_blk_t *ptr2blk(void *ptr, bool trace)
+static inline mem_blk_t *__ptr2blk(void *ptr, bool trace)
 {
     size_t head_size = trace ? MEM2_HEAD_SIZE : MEM_HEAD_SIZE;
 
     return (mem_blk_t *)((uint8_t *)ptr - head_size);
 }
 
-static inline void *blk2ptr(mem_blk_t *mem_blk, bool trace)
+static inline void *__blk2ptr(mem_blk_t *mem_blk, bool trace)
 {
     size_t head_size = trace ? MEM2_HEAD_SIZE : MEM_HEAD_SIZE;
 

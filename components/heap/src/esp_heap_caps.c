@@ -113,7 +113,9 @@ void IRAM_ATTR *_heap_caps_malloc(size_t size, uint32_t caps, const char *file, 
     }
 
     for (num = 0; num < g_heap_region_num; num++) {
-        bool trace;
+#ifdef CONFIG_HEAP_TRACING
+        bool trace;        
+#endif
         size_t head_size;
 
         if ((g_heap_region[num].caps & caps) != caps) {
@@ -176,10 +178,12 @@ void IRAM_ATTR *_heap_caps_malloc(size_t size, uint32_t caps, const char *file, 
         }
 
         mem_blk_set_used(mem_blk);
+#ifdef CONFIG_HEAP_TRACING
         if (trace) {
             mem_blk_set_traced((mem2_blk_t *)mem_blk, file, line);
             ESP_EARLY_LOGV(TAG, "mem_blk1 %p set trace", mem_blk);
         }
+#endif
 
         if (g_heap_region[num].free_blk == mem_blk) {
             mem_blk_t *free_blk = mem_blk;
@@ -268,7 +272,9 @@ void IRAM_ATTR _heap_caps_free(void *ptr, const char *file, size_t line)
                         mem_blk_prev(mem_blk_next(mem_blk)));
 
     mem_blk_set_unused(mem_blk);
+#ifdef CONFIG_HEAP_TRACING
     mem_blk_set_untraced((mem2_blk_t *)mem_blk);
+#endif
 
     prev = mem_blk_prev(mem_blk);
     next = mem_blk_next(mem_blk);
