@@ -174,8 +174,7 @@ static inline void *__blk2ptr(mem_blk_t *mem_blk, bool trace)
 
 static inline size_t ptr_size(void *ptr)
 {
-    bool trancd = ptr_is_traced(ptr);
-    mem_blk_t *blk_mem = ptr2blk(ptr, trancd);
+    mem_blk_t *blk_mem = ptr2blk(ptr, ptr_is_traced(ptr));
     size_t size = blk_link_size(blk_mem) - mem_blk_head_size(trancd);
 
     return size;
